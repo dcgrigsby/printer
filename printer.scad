@@ -88,6 +88,11 @@ module frame(x, y, z) {
     }
   }
 
+  // member for pulleys that drive Z-axis
+  translate([0, y /2 - .75, 3]) {
+    cube(size=[x, 1.5, 1.5]);
+  }
+
   // members to mount CoreXY
   core_xy_z_offset = 5;
   translate([0, 0, z - core_xy_z_offset]) {
@@ -99,7 +104,7 @@ module frame(x, y, z) {
 }
 
 build_plate_size = 12;
-bed_frame_x = 20;
+bed_frame_x = 20; // make wider if print head can't print edge to edge
 bed_frame_y = 14.5;
 build_plate_screw_offset = 0.5;
 y_lead_screw_hole_offset = 0.75;
@@ -143,4 +148,7 @@ translate([0, 1.5, 3.5]) {
 }
 
 
-// NEXT: RAILS AND BLOCKS
+// NEXT:
+// BOTTOM BAR FOR PULLEYS
+// RAILS AND BLOCKS
+// PRINT HEAD RAILS/BLOCKS, BEAM
