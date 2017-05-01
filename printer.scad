@@ -232,30 +232,22 @@ translate([frame_x / 4, frame_y - 1.5 - 2.5, 3]) {
 z_rail_length = frame_z - 3 - core_xy_z_offset - 1.5 - .5;
 
 translate([0, 1.5 + rail_height, 4.75]) {
-  color([89/255, 2/255, 221/255]) {
-    rail(z_rail_length, [90, 0, 0], "vertical");
-  }
+  rail(z_rail_length, [90, 0, 0], "vertical");
 }
 
 translate([frame_x - rail_width, 1.5 + rail_height, 4.75]) {
-  color([89/255, 2/255, 221/255]) {
-    rail(z_rail_length, [90, 0, 0], "vertical");
-  }
+  rail(z_rail_length, [90, 0, 0], "vertical");
 }
 
 y_rail_offset = frame_z - core_xy_z_offset + 1.5;
 y_rail_length =  frame_y - 3.5;
 
 translate([1.5, 1.5 + .25, y_rail_offset]) {
-  color([89/255, 2/255, 221/255]) {
-    rail(y_rail_length, [0, 90, 0], "corexy y");
-  }
+  rail(y_rail_length, [0, 90, 0], "corexy y");
 }
 
 translate([frame_x - 1.5 - rail_height, 1.5 + .25, y_rail_offset]) {
-  color([89/255, 2/255, 221/255]) {
-    rail(y_rail_length, [0, 90, 0], "corexy y");
-  }
+  rail(y_rail_length, [0, 90, 0], "corexy y");
 }
 
 // print head beam and rail
@@ -263,10 +255,13 @@ translate([frame_x - 1.5 - rail_height, 1.5 + .25, y_rail_offset]) {
 translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_z_offset]) {
   print_head_beam_length = frame_x - 2 * rail_and_block_height - 3;
   print_head_beam(print_head_beam_length);
-  translate([.25, 1.5, 1.5]) {
-    rail(print_head_beam_length - .5, [0, 0, -90], "corexy x");
+  translate([0, 0, 1.5]) {
+    rotate([90, 0, 0]) {
+      #rail(print_head_beam_length - .5, [0, 0, -90], "corexy x");
+    }
   }
 }
 
 // TODO:
 // bed frame needs to be wider to accommodate block - will extend beyond columns on both sides
+// add blocks
