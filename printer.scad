@@ -166,7 +166,9 @@ module stepper() {
 module rail(length, rotation, note="") {
   // http://www.lm76.com/speed_guide.htm - size 15N
   rotate(rotation) {
-    cube(size=[rail_width, length, rail_height]);
+    color([89/255, 2/255, 221/255]) {
+      cube(size=[rail_width, length, rail_height]);
+    }
     if (note != "") {
       echo(str("Rail: ", length, " (", note, ")"));
     } else {
@@ -261,13 +263,8 @@ translate([frame_x - 1.5 - rail_height, 1.5 + .25, y_rail_offset]) {
 translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_z_offset]) {
   print_head_beam_length = frame_x - 2 * rail_and_block_height - 3;
   print_head_beam(print_head_beam_length);
-
-  // should the rail be along the top, or on the side? see dynamic moment on http://www.lm76.com/speed_guide.htm
   translate([.25, 1.5, 1.5]) {
-    x_rail_length = print_head_beam_length - .5;
-    color([89/255, 2/255, 221/255]) {
-      rail(x_rail_length, [0, 0, -90], "corexy x");
-    }
+    rail(print_head_beam_length - .5, [0, 0, -90], "corexy x");
   }
 }
 
