@@ -249,14 +249,11 @@ translate([frame_x - 1.5 - rail_height, 1.5 + .25, y_rail_offset]) {
   }
 }
 
-// print head bean and rail
+// print head beam and rail
 
 translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_z_offset]) {
   print_head_beam_length = frame_x - 2 * rail_and_block_height - 3;
-  echo(str("print_head_beam_length = ", print_head_beam_length));
-  color([119/255, 136/255, 153/255]) {
-    print_head_beam(print_head_beam_length);
-  }
+  print_head_beam(print_head_beam_length);
 
   // should the rail be along the top, or on the side? see dynamic moment on http://www.lm76.com/speed_guide.htm
   translate([.25, 1.5, 1.5]) {
