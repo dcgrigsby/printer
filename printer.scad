@@ -8,7 +8,6 @@ rail_height = 18.5 * inches_per_mm;
 rail_width = 38 * inches_per_mm;
 
 module extrusion1515(length, dimension, note="", model="1515") {
-  echo(str("Variable = ", length));
   if (dimension == "x") {
     cube([length, 1.5, 1.5]);
   } else if (dimension == "y") {
@@ -18,9 +17,9 @@ module extrusion1515(length, dimension, note="", model="1515") {
   }
 
   if (note != "") {
-    echo(str(model, " Extrusion: ", size, " (", note, ")"));
+    echo(str(model, " Extrusion: ", length, " (", note, ")"));
   } else {
-    echo(str(model, " 1515 Extrusion: ", size));
+    echo(str(model, " 1515 Extrusion: ", length));
   }
 }
 
