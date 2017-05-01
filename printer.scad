@@ -124,7 +124,7 @@ module frame(x, y, z, lead_screw_hole_offset, core_xy_z_offset) {
     extrusion1515(x - 3, "x", "front, bottom x");
   }
   translate([1.5, y - 1.5, 3]) {
-    extrusion1515(x - 3, "x", "rear, bottom x");
+    extrusion1504(x - 3, "x", "rear, bottom x");
   }
   translate([x - 1.5, 1.5, 3]) {
     extrusion1504(y - 3, "y", "right, bottom y");
@@ -255,12 +255,13 @@ translate([frame_x - 1.5 - rail_height, 1.5 + .25, y_rail_offset]) {
 translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_z_offset]) {
   print_head_beam_length = frame_x - 2 * rail_and_block_height - 3;
   print_head_beam(print_head_beam_length);
-  translate([0, 0, 1.5]) {
+  translate([.25, 0, 1.5]) {
     rotate([90, 0, 0]) {
-      #rail(print_head_beam_length - .5, [0, 0, -90], "corexy x");
+      rail(print_head_beam_length - .5, [0, 0, -90], "corexy x");
     }
   }
 }
+
 
 // TODO:
 // bed frame needs to be wider to accommodate block - will extend beyond columns on both sides
