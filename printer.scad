@@ -150,7 +150,7 @@ module frame(x, y, z, lead_screw_hole_offset, core_xy_z_offset) {
 }
 
 module stepper() {
-  echo("Stepper"));
+  echo("Stepper");
   color([244/255, 206/255, 66/255]) {
     cube(size=[2.5, 2.5, 2.5]);
   }
