@@ -87,9 +87,9 @@ module lead_screw(note="") {
     r = 4 * inches_per_mm; // 8mm diameter
     cylinder(r=r, h=h, center=true);
     if (note != "") {
-      echo(str("Lead screw: 500", length, " (", note, ")"));
+      echo(str("Lead screw: 500 (", note, ")"));
     } else {
-      echo(str("Lead screw: 500", length));
+      echo("Lead screw: 500");
     }
   }
 }
