@@ -7,8 +7,16 @@ rail_and_block_height = 32 * inches_per_mm;
 rail_height = 18.5 * inches_per_mm;
 rail_width = 38 * inches_per_mm;
 
-module extrusion1515(size, note="", model="1515") {
-  cube(size=size);
+module extrusion1515(length, dimension, note="", model="1515") {
+  echo(str("Variable = ", length));
+  if (dimension == "x") {
+    cube([length, 1.5, 1.5]);
+  } else if (dimension == "y") {
+    cube([1.5, length, 1.5]);
+  } else if (dimension == "z") {
+    cube([1.5, 1.5, length]);
+  }
+
   if (note != "") {
     echo(str(model, " Extrusion: ", size, " (", note, ")"));
   } else {
@@ -16,18 +24,18 @@ module extrusion1515(size, note="", model="1515") {
   }
 }
 
-module extrusion1504(size, note="") {
+module extrusion1504(length, dimension, note="") {
   color([119/255, 136/255, 153/255]) {
-    extrusion1515(size, note, "1504");
+    extrusion1515(length, dimension, note, "1504");
   }
 }
 
 module print_head_beam(size) {
-  extrusion1504([size, 1.5, 1.5], "print head beam");
+  extrusion1504(size, "x", "print head beam");
 }
 
 module build_plate(size, hole_offset) {
-  echo(str("Build plate: ", size));
+  echo(str("Build plate: ", size, "x", size));
   difference() {
     cube(size=[size, size, .25]);
     translate([hole_offset, hole_offset, -1]) {
@@ -46,9 +54,9 @@ module bed_frame(x, y, build_plate_size, build_plate_screw_offset, lead_screw_ho
   difference() {
     union() {
       // frame body
-      extrusion1504([x, 1.5, 1.5], "bed frame x");
+      extrusion1504(x, "x", "bed frame x");
       translate([x / 2 - .75, 1.5, 0]) {
-        extrusion1504([1.5, y - 1.5, 1.5], "bed frame y");
+        extrusion1504(y - 1.5, "y", "bed frame y");
       }
       // screws for leveling
       color([0/255, 255/255, 0/255]) {
@@ -87,9 +95,9 @@ module lead_screw(note="") {
     r = 4 * inches_per_mm; // 8mm diameter
     cylinder(r=r, h=h, center=true);
     if (note != "") {
-      echo(str("Lead screw: 500 (", note, ")"));
+      echo(str("Lead screw (", note, ")"));
     } else {
-      echo("Lead screw: 500");
+      echo("Lead screw");
     }
   }
 }
@@ -98,54 +106,54 @@ module frame(x, y, z, lead_screw_hole_offset, core_xy_z_offset) {
   // columns
   for (i=[[0, 0], [x - 1.5, 0]]) {
     translate([i[0], i[1], 0]) {
-      extrusion1504([1.5, 1.5, z], "front column");
+      extrusion1504(z, "z", "front column");
     }
   }
 
   for (i=[[x - 1.5, y - 1.5], [0, y - 1.5]]) {
     translate([i[0], i[1], 0]) {
-      extrusion1515([1.5, 1.5, z], "rear column");
+      extrusion1515(z, "z", "rear column");
     }
   }
 
   // members at 3" and along the top
 
   translate([0, 1.5, 3]) {
-    extrusion1504([1.5, y - 3, 1.5], "left, bottom y");
+    extrusion1504(y - 3, "y", "left, bottom y");
   }
   translate([1.5, 0, 3]) {
-    extrusion1515([x - 3, 1.5, 1.5], "front, bottom x");
+    extrusion1515(x - 3, "x", "front, bottom x");
   }
   translate([1.5, y - 1.5, 3]) {
-    extrusion1515([x - 3, 1.5, 1.5], "rear, bottom x");
+    extrusion1515(x - 3, "x", "rear, bottom x");
   }
   translate([x - 1.5, 1.5, 3]) {
-    extrusion1504([1.5, y - 3, 1.5], "right, bottom y");
+    extrusion1504(y - 3, "y", "right, bottom y");
   }
   translate([0, 1.5, z - 1.5]) {
-    extrusion1515([1.5, y - 3, 1.5], "left, top y");
+    extrusion1515(y - 3, "y", "left, top y");
   }
   translate([1.5, 0, z - 1.5]) {
-    extrusion1515([x - 3, 1.5, 1.5], "front, top x");
+    extrusion1515(x - 3, "x", "front, top x");
   }
   translate([1.5, y - 1.5, z - 1.5]) {
-    extrusion1515([x - 3, 1.5, 1.5], "rear, top x");
+    extrusion1515(x - 3, "x", "rear, top x");
   }
   translate([x - 1.5, 1.5, z - 1.5]) {
-    extrusion1515([1.5, y - 3, 1.5], "right, top y");
+    extrusion1515(y - 3, "y", "right, top y");
   }
 
   // member for pulleys that drive Z-axis
   translate([1.5, y / 2 - .75, 3]) {
-    extrusion1504([x - 3, 1.5, 1.5], "bottom, for pulleys for z");
+    extrusion1504(x - 3, "x", "bottom, for pulleys for z");
   }
 
   // members to mount CoreXY
   translate([0, 1.5, z - core_xy_z_offset]) {
-    extrusion1504([1.5, y - 3, 1.5], "left corexy");
+    extrusion1504(y - 3, "y", "left corexy");
   }
   translate([x - 1.5, 1.5, z - core_xy_z_offset]) {
-    extrusion1504([1.5, y - 3, 1.5], "right corexy");
+    extrusion1504(y - 3, "y", "right corexy");
   }
 }
 
@@ -265,4 +273,4 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
 }
 
 // TODO:
-// bed frame needs to be wider to accommodate block
+// bed frame needs to be wider to accommodate block - will extend beyond columns on both sides
