@@ -93,58 +93,50 @@ module frame(x, y, z, lead_screw_hole_offset, core_xy_z_offset) {
 
   // members at 3" and along the top
 
-  translate([0, 0, 3]) {
+  translate([0, 1.5, 3]) {
     color([119/255, 136/255, 153/255]) {
-      cube(size=[1.5, y, 1.5]);
-    }
-    cube(size=[x, 1.5, 1.5]);
-  }
-  translate([0, y - 1.5, 3]) {
-    cube(size=[x, 1.5, 1.5]);
-  }
-  translate([x - 1.5, 0, 3]) {
-    color([119/255, 136/255, 153/255]) {
-      cube(size=[1.5, y, 1.5]);
+      cube(size=[1.5, y - 3, 1.5]);
     }
   }
-
-  translate([0, 0, z - 1.5]) {
-    cube(size=[1.5, y, 1.5]);
-    cube(size=[x, 1.5, 1.5]);
+  translate([1.5, 0, 3]) {
+    cube(size=[x - 3, 1.5, 1.5]);
   }
-  translate([0, y - 1.5, z - 1.5]) {
-    cube(size=[x, 1.5, 1.5]);
+  translate([1.5, y - 1.5, 3]) {
+    cube(size=[x - 3, 1.5, 1.5]);
   }
-  translate([x - 1.5, 0, z - 1.5]) {
-    cube(size=[1.5, y, 1.5]);
+  translate([x - 1.5, 1.5, 3]) {
+    color([119/255, 136/255, 153/255]) {
+      cube(size=[1.5, y - 3, 1.5]);
+    }
+  }
+  translate([0, 1.5, z - 1.5]) {
+    cube(size=[1.5, y - 3, 1.5]);
+  }
+  translate([1.5, 0, z - 1.5]) {
+    cube(size=[x - 3, 1.5, 1.5]);
+  }
+  translate([1.5, y - 1.5, z - 1.5]) {
+    cube(size=[x - 3, 1.5, 1.5]);
+  }
+  translate([x - 1.5, 1.5, z - 1.5]) {
+    cube(size=[1.5, y - 3, 1.5]);
   }
 
   // member for pulleys that drive Z-axis
-  translate([0, y /2 - .75, 3]) {
+  translate([1.5, y /2 - .75, 3]) {
     color([119/255, 136/255, 153/255]) {
-      cube(size=[x, 1.5, 1.5]);
+      cube(size=[x - 3, 1.5, 1.5]);
     }
   }
 
   // members to mount CoreXY
   union() {
     color([119/255, 136/255, 153/255]) {
-      translate([0, 0, z - core_xy_z_offset]) {
-        difference() {
-          cube(size=[1.5, y, 1.5]);
-          /* I /think/ these won't be necessary */
-          /*translate([.75, lead_screw_hole_offset, 1.5 / 2 -.01]) {
-            cylinder(r=16 * inches_per_mm / 2, h=1.6, center=true);
-          }*/
-        }
+      translate([0, 1.5, z - core_xy_z_offset]) {
+        cube(size=[1.5, y - 3, 1.5]);
       }
-      translate([x - 1.5, 0, z - core_xy_z_offset]) {
-        difference() {
-          cube(size=[1.5, y, 1.5]);
-          /*translate([.75, lead_screw_hole_offset, 1.5 / 2 -.01]) {
-            cylinder(r=16 * inches_per_mm / 2, h=1.6, center=true);
-          }*/
-        }
+      translate([x - 1.5, 1.5, z - core_xy_z_offset]) {
+        cube(size=[1.5, y - 3, 1.5]);
       }
     }
   }
@@ -271,7 +263,7 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
 
 // TODO:
 // bed frame needs to be wider to accommodate block
-// update lengths so that whole pieces aren't overlapping; echo correct lengths
+// echo correct lengths for extrusions
 
 /*
   Rail lengths
