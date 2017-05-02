@@ -76,10 +76,10 @@ module bed_frame(x, y, build_plate_size, build_plate_screw_offset, lead_screw_ho
       }
     }
     r = (16 + 2) * inches_per_mm / 2; // 16mm diameter + 2mm buffer
-    translate([lead_screw_hole_offset, .75, -1]) {
+    translate([lead_screw_hole_offset + .5, .75, -1]) {
       cylinder(r=r, h=10, center=true);
     }
-    translate([x - lead_screw_hole_offset, .75, -1]) {
+    translate([x - lead_screw_hole_offset - .5, .75, -1]) {
       cylinder(r=r, h=10, center=true);
     }
     translate([x / 2, y - lead_screw_hole_offset, -1]) {
@@ -178,19 +178,19 @@ module rail(length, rotation, note="") {
 }
 
 build_plate_size = 12;
-bed_frame_x = 20; // make wider if print head can't print edge to edge
-bed_frame_y = 14.5;
+bed_frame_x = 25; // make wider if print head can't print edge to edge
+bed_frame_y = 18.5;
 build_plate_screw_offset = 0.5;
 lead_screw_hole_offset = 0.75;
 core_xy_z_offset = 8;
 
-frame_x = bed_frame_x;
+frame_x = bed_frame_x - 1;
 frame_y = 1.5 + rail_and_block_height + bed_frame_y;
 frame_z = 30;
 
-frame(bed_frame_x, frame_y, frame_z, 1.5 + .75 + rail_and_block_height, core_xy_z_offset);
+frame(frame_x, frame_y, frame_z, 1.5 + .75 + rail_and_block_height, core_xy_z_offset);
 
-translate([0, 1.5 + rail_and_block_height, 5.5]) {
+translate([-.5, 1.5 + rail_and_block_height, 5.5]) {
   bed_frame(bed_frame_x, bed_frame_y, build_plate_size, build_plate_screw_offset, lead_screw_hole_offset);
 
   translate([(bed_frame_x - build_plate_size) / 2, .5, 2.5]) {
@@ -204,10 +204,10 @@ color([0/255, 191/255, 255/255]) {
   translate([.75, 1.5 + .75 + rail_and_block_height, 2]) {
     lead_screw();
   }
-  translate([bed_frame_x - .75,  1.5 + .75 + rail_and_block_height, 2]) {
+  translate([frame_x - .75,  1.5 + .75 + rail_and_block_height, 2]) {
     lead_screw();
   }
-  translate([bed_frame_x / 2, frame_y - .75, 2]) {
+  translate([frame_x / 2, frame_y - .75, 2]) {
     lead_screw();
   }
 }
@@ -262,7 +262,5 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
   }
 }
 
-
 // TODO:
-// bed frame needs to be wider to accommodate block - will extend beyond columns on both sides
 // add blocks
