@@ -63,14 +63,14 @@ module bed_frame(x, y, build_plate_size, build_plate_screw_offset, lead_screw_ho
           // x
           r = .15;
           translate([x / 2 - build_plate_size / 2 + build_plate_screw_offset, 1.5 - build_plate_screw_offset, 0]) {
-            cylinder(r=r, h=2.75, center=true);
+            cylinder(r=r, h=2.76, center=true);
           }
           translate([x / 2 + build_plate_size / 2 - build_plate_screw_offset, 1.5 - build_plate_screw_offset, 0]) {
-            cylinder(r=r, h=2.75, center=true);
+            cylinder(r=r, h=2.76, center=true);
           }
           // y
           translate([x / 2, build_plate_size - build_plate_screw_offset + .5, 0]) {
-            cylinder(r=r, h=2.75, center=true);
+            cylinder(r=r, h=2.76, center=true);
           }
         }
       }
