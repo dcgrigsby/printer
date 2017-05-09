@@ -29,23 +29,26 @@ module print_head_beam(size) {
   extrusion1504(size, "x", "print head beam");
 }
 
-module build_plate(size, hole_offset) {
+module build_plate(size) {
   echo(str("Build plate: ", size, "x", size));
-  difference() {
-    cube(size=[size, size, .25]);
-    translate([hole_offset, hole_offset, -1]) {
-      cylinder(r=.25, h=10, center=true);
-    }
-    translate([size - hole_offset, hole_offset, -1]) {
-      cylinder(r=.25, h=10, center=true);
-    }
-    translate([size / 2, size - hole_offset, -1]) {
-      cylinder(r=.25, h=10, center=true);
+  hole_offset = .5;
+  color([255/255, 0/255, 0/255]) {
+    difference() {
+      cube(size=[size, size, .25]);
+      translate([hole_offset, hole_offset, -1]) {
+        cylinder(r=.25, h=10, center=true);
+      }
+      translate([size - hole_offset, hole_offset, -1]) {
+        cylinder(r=.25, h=10, center=true);
+      }
+      translate([size / 2, size - hole_offset, -1]) {
+        cylinder(r=.25, h=10, center=true);
+      }
     }
   }
 }
 
-module bed_frame(x, y, build_plate_size, build_plate_screw_offset, front_lead_screw_hole_offset, rear_lead_screw_hole_offset) {
+module bed_frame(x, y, build_plate_size, front_lead_screw_hole_offset, rear_lead_screw_hole_offset) {
   difference() {
     union() {
       // frame body
@@ -58,14 +61,14 @@ module bed_frame(x, y, build_plate_size, build_plate_screw_offset, front_lead_sc
         translate([0, 0, 2.75 / 2]) {
           // x
           r = .15;
-          translate([x / 2 - build_plate_size / 2 + build_plate_screw_offset, 1.5 - build_plate_screw_offset, 0]) {
+          translate([x / 2 - build_plate_size / 2 + .5, .75, 0]) {
             cylinder(r=r, h=2.76, center=true);
           }
-          translate([x / 2 + build_plate_size / 2 - build_plate_screw_offset, 1.5 - build_plate_screw_offset, 0]) {
+          translate([x / 2 + build_plate_size / 2 - .5, .75, 0]) {
             cylinder(r=r, h=2.76, center=true);
           }
           // y
-          translate([x / 2, build_plate_size - build_plate_screw_offset + .5, 0]) {
+          translate([x / 2, build_plate_size + .25 - .5, 0]) {
             cylinder(r=r, h=2.76, center=true);
           }
         }
@@ -195,10 +198,6 @@ module rail(length, rotation, note="") {
   }
 }
 
-build_plate_size =14;
-bed_frame_x = 25;
-bed_frame_y = 17;
-build_plate_screw_offset = 0.5;
 
 bearing_block_offset = 1.5 + rail_and_block_height - bearing_block_radius * 2;
 
@@ -229,10 +228,12 @@ translate([bearing_block_length / 2 + frame_x / 2, frame_y - 1.5, 3]) {
   }
 }
 
-
 // frame
 
 core_xy_z_offset = 8;
+
+bed_frame_x = 25;
+bed_frame_y = 17;
 
 frame_x = bed_frame_x - 1;
 frame_y = 1.5 + rail_and_block_height + bed_frame_y + 1.5;
@@ -242,16 +243,15 @@ frame_z = 30;
 front_lead_screw_hole_offset = 1.5 + bearing_block_receiver_offset;
 rear_lead_screw_offset = bearing_block_receiver_offset;
 
-
 frame(frame_x, frame_y, frame_z, 1.5 + .75 + rail_and_block_height, core_xy_z_offset);
 
-translate([-.5, 1.5 + rail_and_block_height, 5.5]) {
-  bed_frame(bed_frame_x, bed_frame_y, build_plate_size, build_plate_screw_offset, front_lead_screw_hole_offset, rear_lead_screw_offset);
+build_plate_size = 14;
+build_plate_screw_offset = .5;
 
-  translate([(bed_frame_x - build_plate_size) / 2, .5, 2.5]) {
-    color([255/255, 0/255, 0/255]) {
-      build_plate(build_plate_size, 0.5);
-    }
+translate([-.5, 1.5 + rail_and_block_height, 5.5]) {
+  bed_frame(bed_frame_x, bed_frame_y, build_plate_size, front_lead_screw_hole_offset, rear_lead_screw_offset);
+  translate([(bed_frame_x - build_plate_size) / 2, .25, 2.5]) {
+    build_plate(build_plate_size, 0.5);
   }
 }
 
@@ -305,8 +305,6 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
   }
 }
 
-
 // TODO:
 // add roller_blocks
 // add lead screw nuts - might neet to lengthen bed frame y
-// why aren't print bed mounting screws centered in extrusion? vestigal?
