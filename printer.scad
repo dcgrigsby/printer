@@ -3,10 +3,6 @@ $fs=.01;
 
 inches_per_mm = 0.0393701;
 
-rail_and_block_height = 32 * inches_per_mm;
-rail_height = 18.5 * inches_per_mm;
-rail_width = 38 * inches_per_mm;
-
 module extrusion1515(length, dimension, note="", model="1515") {
   if (dimension == "x") {
     cube([length, 1.5, 1.5]);
@@ -49,7 +45,7 @@ module build_plate(size, hole_offset) {
   }
 }
 
-module bed_frame(x, y, build_plate_size, build_plate_screw_offset, lead_screw_hole_offset) {
+module bed_frame(x, y, build_plate_size, build_plate_screw_offset, front_lead_screw_hole_offset, rear_lead_screw_hole_offset) {
   difference() {
     union() {
       // frame body
@@ -76,27 +72,45 @@ module bed_frame(x, y, build_plate_size, build_plate_screw_offset, lead_screw_ho
       }
     }
     r = (16 + 2) * inches_per_mm / 2; // 16mm diameter + 2mm buffer
-    translate([lead_screw_hole_offset + .5, .75, -1]) {
+    translate([front_lead_screw_hole_offset + .5, .75, -1]) {
       cylinder(r=r, h=10, center=true);
     }
-    translate([x - lead_screw_hole_offset - .5, .75, -1]) {
+    translate([x - front_lead_screw_hole_offset - .5, .75, -1]) {
       cylinder(r=r, h=10, center=true);
     }
-    translate([x / 2, y - lead_screw_hole_offset, -1]) {
+    translate([x / 2, y - rear_lead_screw_hole_offset, -1]) {
       cylinder(r=r, h=10, center=true);
     }
   }
 }
 
+bearing_block_length = 60 * inches_per_mm;
+bearing_block_width = 43 * inches_per_mm;
+bearing_block_radius = 6 * inches_per_mm;
+bearing_block_receiver_offset = 25 * inches_per_mm;
+
+module bearing_block() {
+  color([100/255, 149/255, 237/255]) {
+    difference() {
+      cube(size=[bearing_block_length, bearing_block_width, 34 * inches_per_mm]);
+      translate([30 * inches_per_mm, bearing_block_receiver_offset, 17 * inches_per_mm]) {
+        cylinder(r=bearing_block_radius, h=36 * inches_per_mm, center=true);
+      }
+    }
+  }
+}
+
 module lead_screw(note="") {
-  h = 500 * inches_per_mm; // 500mm high
-  translate([0, 0, h / 2]) {
-    r = 4 * inches_per_mm; // 8mm diameter
-    cylinder(r=r, h=h, center=true);
-    if (note != "") {
-      echo(str("Lead screw (", note, ")"));
-    } else {
-      echo("Lead screw");
+  color([0/255, 191/255, 255/255]) {
+    h = 500 * inches_per_mm; // 500mm high
+    translate([0, 0, h / 2]) {
+      r = 8 * inches_per_mm; // 8mm diameter
+      cylinder(r=r, h=h, center=true);
+      if (note != "") {
+        echo(str("Lead screw (", note, ")"));
+      } else {
+        echo("Lead screw");
+      }
     }
   }
 }
@@ -163,6 +177,10 @@ module stepper() {
   }
 }
 
+rail_and_block_height = 32 * inches_per_mm;
+rail_height = 18.5 * inches_per_mm;
+rail_width = 38 * inches_per_mm;
+
 module rail(length, rotation, note="") {
   // http://www.lm76.com/speed_guide.htm - size 15N
   rotate(rotation) {
@@ -177,38 +195,63 @@ module rail(length, rotation, note="") {
   }
 }
 
-build_plate_size = 12;
-bed_frame_x = 25; // make wider if print head can't print edge to edge
-bed_frame_y = 18.5;
+build_plate_size =14;
+bed_frame_x = 25;
+bed_frame_y = 17;
 build_plate_screw_offset = 0.5;
-lead_screw_hole_offset = 0.75;
+
+bearing_block_offset = 1.5 + rail_and_block_height - bearing_block_radius * 2;
+
+translate([1.5, bearing_block_length + bearing_block_offset, 3]) {
+  rotate([0, 0, -90]) {
+    bearing_block();
+    translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
+      lead_screw();
+    }
+  }
+}
+
+translate([frame_x - 1.5, bearing_block_offset, 3]) {
+  rotate([0, 0, -270]) {
+    bearing_block();
+    translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
+      lead_screw();
+    }
+  }
+}
+
+translate([bearing_block_length / 2 + frame_x / 2, frame_y - 1.5, 3]) {
+  rotate([0, 0, 180]) {
+    bearing_block();
+    translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
+      lead_screw();
+    }
+  }
+}
+
+
+// frame
+
 core_xy_z_offset = 8;
 
 frame_x = bed_frame_x - 1;
-frame_y = 1.5 + rail_and_block_height + bed_frame_y;
+frame_y = 1.5 + rail_and_block_height + bed_frame_y + 1.5;
 frame_z = 30;
+
+// offset from edge of frame
+front_lead_screw_hole_offset = 1.5 + bearing_block_receiver_offset;
+rear_lead_screw_offset = bearing_block_receiver_offset;
+
 
 frame(frame_x, frame_y, frame_z, 1.5 + .75 + rail_and_block_height, core_xy_z_offset);
 
 translate([-.5, 1.5 + rail_and_block_height, 5.5]) {
-  bed_frame(bed_frame_x, bed_frame_y, build_plate_size, build_plate_screw_offset, lead_screw_hole_offset);
+  bed_frame(bed_frame_x, bed_frame_y, build_plate_size, build_plate_screw_offset, front_lead_screw_hole_offset, rear_lead_screw_offset);
 
   translate([(bed_frame_x - build_plate_size) / 2, .5, 2.5]) {
     color([255/255, 0/255, 0/255]) {
       build_plate(build_plate_size, 0.5);
     }
-  }
-}
-
-color([0/255, 191/255, 255/255]) {
-  translate([.75, 1.5 + .75 + rail_and_block_height, 2]) {
-    lead_screw();
-  }
-  translate([frame_x - .75,  1.5 + .75 + rail_and_block_height, 2]) {
-    lead_screw();
-  }
-  translate([frame_x / 2, frame_y - .75, 2]) {
-    lead_screw();
   }
 }
 
@@ -262,5 +305,8 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
   }
 }
 
+
 // TODO:
-// add blocks
+// add roller_blocks
+// add lead screw nuts - might neet to lengthen bed frame y
+// why aren't print bed mounting screws centered in extrusion? vestigal?
