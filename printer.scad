@@ -205,6 +205,34 @@ module nut() {
   }
 }
 
+roller_block_width = 44 * inches_per_mm;
+roller_block_height = 12 * inches_per_mm;
+
+roller_block_5_length = 100 * inches_per_mm;
+
+module roller_block_5() {
+  echo("Roller block 5");
+  color([150/255, 2/255, 200/255]) {
+    difference() {
+      cube(size=[roller_block_width, roller_block_5_length, roller_block_height]);
+      translate([roller_block_width / 2, roller_block_5_length / 2, roller_block_height / 2]) {
+        translate([13 * inches_per_mm, 13 * inches_per_mm, 0]) {
+          cylinder(r=2 * inches_per_mm, h=roller_block_height + 2 * inches_per_mm, center=true);
+        }
+        translate([-13 * inches_per_mm, 13 * inches_per_mm, 0]) {
+          cylinder(r=2 * inches_per_mm, h=roller_block_height + 2 * inches_per_mm, center=true);
+        }
+        translate([-13 * inches_per_mm, -13 * inches_per_mm, 0]) {
+          cylinder(r=2 * inches_per_mm, h=roller_block_height + 2 * inches_per_mm, center=true);
+        }
+        translate([13 * inches_per_mm, -13 * inches_per_mm, 0]) {
+          cylinder(r=2 * inches_per_mm, h=roller_block_height + 2 * inches_per_mm, center=true);
+        }
+      }
+    }
+  }
+}
+
 rail_and_block_height = 32 * inches_per_mm;
 rail_height = 18.5 * inches_per_mm;
 rail_width = 38 * inches_per_mm;
@@ -286,7 +314,8 @@ frame(frame_x, frame_y, frame_z, 1.5 + .75 + rail_and_block_height, core_xy_z_of
 build_plate_size = 14;
 build_plate_screw_offset = .5;
 
-translate([-.5, 1.5 + rail_and_block_height, 5.5]) {
+/*translate([-.5, 1.5 + rail_and_block_height, 5.5]) {*/
+translate([-.5, 1.5 + rail_and_block_height, 4.75 + roller_block_5_length / 2 - .75]) {
   bed_frame(bed_frame_x, bed_frame_y, build_plate_size, front_lead_screw_hole_offset, rear_lead_screw_offset);
   translate([(bed_frame_x - build_plate_size) / 2, .25, 2.5]) {
     build_plate(build_plate_size, 0.5);
@@ -314,10 +343,20 @@ z_rail_length = frame_z - 3 - core_xy_z_offset - 1.5 - .5;
 
 translate([0, 1.5 + rail_height, 4.75]) {
   rail(z_rail_length, [90, 0, 0], "vertical");
+  translate([(rail_width - roller_block_width) / 2, roller_block_height, 0]) {
+    rotate([90, 0, 0]) {
+      roller_block_5();
+    }
+  }
 }
 
 translate([frame_x - rail_width, 1.5 + rail_height, 4.75]) {
   rail(z_rail_length, [90, 0, 0], "vertical");
+  translate([(rail_width - roller_block_width) / 2, roller_block_height, 0]) {
+    rotate([90, 0, 0]) {
+      roller_block_5();
+    }
+  }
 }
 
 y_rail_offset = frame_z - core_xy_z_offset + 1.5;
@@ -344,4 +383,5 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
 }
 
 // TODO:
-// add roller_blocks
+// add roller_block_3
+// extrusions with holes in both directions need to be a different model
