@@ -180,6 +180,31 @@ module stepper() {
   }
 }
 
+nut_width = 40 * inches_per_mm;
+nut_length = 48 * inches_per_mm;
+nut_height = 36 * inches_per_mm;
+
+module nut() {
+  echo("Nut");
+  color([255/255, 204/255, 153/255]) {
+    difference() {
+      cube(size=[nut_width, nut_length, nut_height]);
+      translate([nut_width/2, nut_length/2, nut_height/2]) {
+        // r=8 is actual; r=9 better for eyeballing
+        cylinder(r=9 * inches_per_mm, h=nut_height + 2 * inches_per_mm, center=true);
+      }
+      // this is not actual placement, but the furthest hole on at each end
+      // put here to be able to see if the screws will interfere with the screws for the roller blocks
+      translate([nut_width/2, nut_length/2 + 38 / 2 * inches_per_mm , nut_height/2]) {
+        cylinder(r=2 * inches_per_mm, nut_height + 2 * inches_per_mm, center=true);
+      }
+      translate([nut_width/2, nut_length/2 - 38 / 2 * inches_per_mm, nut_height/2]) {
+        cylinder(r=2 * inches_per_mm, nut_height + 2 * inches_per_mm, center=true);
+      }
+    }
+  }
+}
+
 rail_and_block_height = 32 * inches_per_mm;
 rail_height = 18.5 * inches_per_mm;
 rail_width = 38 * inches_per_mm;
@@ -207,7 +232,12 @@ translate([1.5, bearing_block_length + bearing_block_offset, 3]) {
     translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
       lead_screw();
     }
+    // this is relative to the deep end of the bearing block
+    translate([bearing_block_length / 2 - nut_width / 2, 0, 4]) {
+      nut();
+    }
   }
+
 }
 
 translate([frame_x - 1.5, bearing_block_offset, 3]) {
@@ -215,6 +245,10 @@ translate([frame_x - 1.5, bearing_block_offset, 3]) {
     bearing_block();
     translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
       lead_screw();
+    }
+    // this is relative to the deep end of the bearing block
+    translate([bearing_block_length / 2 - nut_width / 2, 0, 4]) {
+      nut();
     }
   }
 }
@@ -225,6 +259,10 @@ translate([bearing_block_length / 2 + frame_x / 2, frame_y - 1.5, 3]) {
     translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
       lead_screw();
     }
+    // this is relative to the deep end of the bearing block
+    translate([bearing_block_length / 2 - nut_width / 2, 0, 4]) {
+      nut();
+    }
   }
 }
 
@@ -233,10 +271,10 @@ translate([bearing_block_length / 2 + frame_x / 2, frame_y - 1.5, 3]) {
 core_xy_z_offset = 8;
 
 bed_frame_x = 25;
-bed_frame_y = 17;
+bed_frame_y = 17.5;
 
 frame_x = bed_frame_x - 1;
-frame_y = 1.5 + rail_and_block_height + bed_frame_y + 1.5;
+frame_y = 1.5 + rail_and_block_height + bed_frame_y + 1;
 frame_z = 30;
 
 // offset from edge of frame
@@ -307,4 +345,3 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
 
 // TODO:
 // add roller_blocks
-// add lead screw nuts - might neet to lengthen bed frame y
