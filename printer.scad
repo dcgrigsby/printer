@@ -95,11 +95,22 @@ bearing_block_receiver_offset = 25 * inches_per_mm;
 module bearing_block() {
   color([100/255, 149/255, 237/255]) {
     difference() {
-      cube(size=[bearing_block_length, bearing_block_width, 34 * inches_per_mm]);
+      cube(size=[bearing_block_length, bearing_block_width, bearing_block_height])
       translate([30 * inches_per_mm, bearing_block_receiver_offset, 17 * inches_per_mm]) {
         cylinder(r=bearing_block_radius, h=36 * inches_per_mm, center=true);
       }
     }
+  }
+}
+
+bearing_block_shim_height = .25;
+
+echo(str("bearing_block_width = ", bearing_block_width));
+echo(str("bearing_block_length = ", bearing_block_length));
+
+module bearing_block_shim() {
+  color([229/255, 255/255, 204/255]) {
+    cube(size=[bearing_block_shim_height, bearing_block_length, 1.5]);
   }
 }
 
@@ -251,32 +262,41 @@ module rail(length, rotation, note="") {
   }
 }
 
-
 bearing_block_offset = 1.5 + rail_and_block_height - bearing_block_radius * 2;
 
 translate([1.5, bearing_block_length + bearing_block_offset, 3]) {
-  rotate([0, 0, -90]) {
-    bearing_block();
-    translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
-      lead_screw();
-    }
-    // this is relative to the deep end of the bearing block
-    translate([bearing_block_length / 2 - nut_width / 2, 0, 4]) {
-      nut();
+  translate([0, - bearing_block_length, 0]) {
+    bearing_block_shim();
+  }
+  translate([bearing_block_shim_height, 0, 0]) {
+    rotate([0, 0, -90]) {
+
+      bearing_block();
+      translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
+        lead_screw();
+      }
+      // this is relative to the deep end of the bearing block
+      translate([bearing_block_length / 2 - nut_width / 2, 0, 4]) {
+        nut();
+      }
     }
   }
-
 }
 
 translate([frame_x - 1.5, bearing_block_offset, 3]) {
-  rotate([0, 0, -270]) {
-    bearing_block();
-    translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
-      lead_screw();
-    }
-    // this is relative to the deep end of the bearing block
-    translate([bearing_block_length / 2 - nut_width / 2, 0, 4]) {
-      nut();
+  translate([-bearing_block_shim_height, 0, 0]) {
+    bearing_block_shim();
+  }
+  translate([- bearing_block_shim_height, 0, 0]) {
+    rotate([0, 0, -270]) {
+      bearing_block();
+      translate([bearing_block_length / 2, bearing_block_receiver_offset, -1]) {
+        lead_screw();
+      }
+      // this is relative to the deep end of the bearing block
+      translate([bearing_block_length / 2 - nut_width / 2, 0, 4]) {
+        nut();
+      }
     }
   }
 }
@@ -314,7 +334,6 @@ frame(frame_x, frame_y, frame_z, 1.5 + .75 + rail_and_block_height, core_xy_z_of
 build_plate_size = 14;
 build_plate_screw_offset = .5;
 
-/*translate([-.5, 1.5 + rail_and_block_height, 5.5]) {*/
 translate([-.5, 1.5 + rail_and_block_height, 4.75 + roller_block_5_length / 2 - .75]) {
   bed_frame(bed_frame_x, bed_frame_y, build_plate_size, front_lead_screw_hole_offset, rear_lead_screw_offset);
   translate([(bed_frame_x - build_plate_size) / 2, .25, 2.5]) {
@@ -382,6 +401,8 @@ translate([1.5 + rail_and_block_height, (frame_y - 1.5) / 2 , frame_z - core_xy_
   }
 }
 
+
 // TODO:
-// add roller_block_3
+// raise bearing blocks to be centered vertically in extrusion
 // extrusions with holes in both directions need to be a different model
+// add roller_block_3
